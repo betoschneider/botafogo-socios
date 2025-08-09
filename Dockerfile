@@ -5,7 +5,7 @@ FROM python:3.10
 WORKDIR /app
 
 # Copiar arquivos
-COPY app.py .
+COPY app ./app
 
 # Instalar dependências
 RUN pip install --no-cache-dir streamlit pandas requests
