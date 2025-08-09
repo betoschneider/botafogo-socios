@@ -9,3 +9,4 @@ services:
       - ./app:/app  # monta a pasta local /app no container
     working_dir: /app
     command: streamlit run app.py --server.port=8503 --server.address=0.0.0.0
+    restart: always
