@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir streamlit pandas requests
 EXPOSE 8503
 
 # Comando para iniciar o app
-CMD ["streamlit", "run", "app.py", "--server.port=8503", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "app/app.py", "--server.port=8503", "--server.address=0.0.0.0"]
