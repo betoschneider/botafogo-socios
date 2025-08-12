@@ -93,7 +93,8 @@ def main():
     # Tabela sem índice
     st.write("Dados usados no gráfico:")
     # st.dataframe(df_final.style.hide(axis="index"))
-    st.dataframe(df_final.style.hide_index())
+    df_final = df_final.reset_index(drop=True)
+    st.dataframe(df_final)
 
 if __name__ == '__main__':
     main()
