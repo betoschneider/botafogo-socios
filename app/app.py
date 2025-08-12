@@ -24,8 +24,8 @@ def extrair_e_salvar():
                 socios INTEGER
             )
         """)
-        brasil_tz = pytz.timezone('America/Sao_Paulo')
-        agora = datetime.now(brasil_tz).isoformat()
+        fuso_brasil = pytz.timezone("America/Sao_Paulo")
+        agora = datetime.now(fuso_brasil).strftime("%Y-%m-%d %H:%M:%S")
         cursor.execute("INSERT INTO contador (data, socios) VALUES (?, ?)", (agora, numero))
         conn.commit()
         conn.close()
