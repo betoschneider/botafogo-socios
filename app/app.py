@@ -40,18 +40,24 @@ def carregar_dados():
     conn.close()
     return df
 
-# Processar os dados para pegar maior hora por dia
+# Processar os dados para pegar maior hora por dia e separar hora
 def processar_dados(df):
     df['data'] = pd.to_datetime(df['data'])
     df['dia'] = df['data'].dt.date
     idx = df.groupby('dia')['data'].idxmax()
-    df_final = df.loc[idx].sort_values('dia')
-    return df_final[['dia', 'socios']]
+    df_final = df.loc[idx].sort_values('dia').copy()
+    
+    # Adicionar coluna hora formatada
+    df_final['hora'] = df_final['data'].dt.strftime('%H:%M:%S')
+    # Formatar a coluna dia para dd/mm/yyyy
+    df_final['dia'] = df_final['dia'].apply(lambda d: d.strftime('%d/%m/%Y'))
+    
+    return df_final[['dia', 'hora', 'socios']]
 
 # Interface Streamlit
 def main():
     st.set_page_config(
-        page_title="Sócios Botafogo - betoschneider.com ",
+        page_title="Sócios Botafogo - betoschneider.com",
         page_icon="⭐",
     )
     st.title("Gráfico de Sócios do Botafogo - Camisa 7")
@@ -69,7 +75,8 @@ def main():
     st.line_chart(data=df_final.set_index('dia')['socios'])
 
     st.write("Dados usados no gráfico:")
-    st.dataframe(df_final)
+    # Mostrar tabela sem o índice no Streamlit:
+    st.dataframe(df_final.style.hide(axis="index"))
 
 if __name__ == '__main__':
     main()
