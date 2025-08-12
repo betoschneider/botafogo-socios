@@ -15,8 +15,11 @@ def extrair_e_salvar():
         numero = data.get("res")
         print(f"Valor extraído: {numero}")
 
+        # Conectar ao banco
         conn = sqlite3.connect("socios.db")
         cursor = conn.cursor()
+
+        # Criar tabela se não existir
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS contador (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,8 +27,12 @@ def extrair_e_salvar():
                 socios INTEGER
             )
         """)
+
+        # Data/hora no fuso horário de Brasília
         fuso_brasil = pytz.timezone("America/Sao_Paulo")
         agora = datetime.now(fuso_brasil).strftime("%Y-%m-%d %H:%M:%S")
+
+        # Inserir registro
         cursor.execute("INSERT INTO contador (data, socios) VALUES (?, ?)", (agora, numero))
         conn.commit()
         conn.close()
@@ -44,14 +51,20 @@ def carregar_dados():
 
 # Processar os dados para pegar maior hora por dia e separar hora
 def processar_dados(df):
-    df['data'] = pd.to_datetime(df['data'])
+    # Converter para datetime sem fuso (já gravado no horário de Brasília)
+    df['data'] = pd.to_datetime(df['data'], format="%Y-%m-%d %H:%M:%S")
+
+    # Criar coluna de dia
     df['dia'] = df['data'].dt.date
+
+    # Pegar última leitura de cada dia
     idx = df.groupby('dia')['data'].idxmax()
     df_final = df.loc[idx].sort_values('dia').copy()
     
-    # Adicionar coluna hora formatada
+    # Coluna de hora formatada
     df_final['hora'] = df_final['data'].dt.strftime('%H:%M:%S')
-    # Formatar a coluna dia para dd/mm/yyyy
+
+    # Formatar dia para dd/mm/yyyy
     df_final['dia'] = df_final['dia'].apply(lambda d: d.strftime('%d/%m/%Y'))
     
     return df_final[['dia', 'hora', 'socios']]
@@ -74,10 +87,11 @@ def main():
 
     df_final = processar_dados(df)
 
+    # Gráfico de sócios
     st.line_chart(data=df_final.set_index('dia')['socios'])
 
+    # Tabela sem índice
     st.write("Dados usados no gráfico:")
-    # Mostrar tabela sem o índice no Streamlit:
     st.dataframe(df_final.style.hide(axis="index"))
 
 if __name__ == '__main__':
