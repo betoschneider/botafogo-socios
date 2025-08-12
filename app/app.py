@@ -51,7 +51,7 @@ def processar_dados(df):
 # Interface Streamlit
 def main():
     st.set_page_config(
-        page_title="TESTE - Sócios Botafogo - betoschneider.com ",
+        page_title="Sócios Botafogo - betoschneider.com ",
         page_icon="⭐",
     )
     st.title("Gráfico de Sócios do Botafogo - Camisa 7")
