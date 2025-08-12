@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 import pandas as pd
 import streamlit as st
+import pytz
 
 # Função para extrair e salvar o valor da API
 def extrair_e_salvar():
@@ -23,7 +24,8 @@ def extrair_e_salvar():
                 socios INTEGER
             )
         """)
-        agora = datetime.now().isoformat()
+        brasil_tz = pytz.timezone('America/Sao_Paulo')
+        agora = datetime.now(brasil_tz).isoformat()
         cursor.execute("INSERT INTO contador (data, socios) VALUES (?, ?)", (agora, numero))
         conn.commit()
         conn.close()
