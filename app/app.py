@@ -77,7 +77,7 @@ def main():
     )
     st.title("Gráfico de Sócios do Botafogo - Camisa 7")
 
-    extrair_e_salvar()  # Executa antes de exibir os dados
+    # extrair_e_salvar()  # Remova ou comente esta linha
 
     df = carregar_dados()
 

@@ -10,3 +10,9 @@ services:
     working_dir: /app
     command: streamlit run app.py --server.port=8503 --server.address=0.0.0.0
     restart: always
+
+  worker:
+    build: .
+    command: python3 worker.py
+    volumes:
+      - ./app:/app
