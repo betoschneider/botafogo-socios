@@ -33,10 +33,10 @@ def processar_dados(df):
 # Interface Streamlit
 def main():
     st.set_page_config(
-        page_title="Sócios Botafogo - betoschneider.com",
+        page_title="Sócios Camisa 7 - Botafogo",
         page_icon="⭐",
     )
-    st.title("Gráfico de Sócios do Botafogo - Camisa 7")
+    st.title("Número de sócios Camisa 7 Botafogo")
 
     df = carregar_dados()
 
@@ -52,8 +52,10 @@ def main():
     # Tabela sem índice
     st.write("Dados usados no gráfico:")
     # st.dataframe(df_final.style.hide(axis="index"))
-    df_final = df_final.drop(columns='data').reset_index(drop=True)
-    st.dataframe(df_final)
+    df_final = df_final.reset_index(drop=True)
+    st.dataframe(df_final.drop(columns=['data', 'hora']).rename(columns={'dia': 'Data', 'socios': 'Número de Sócios'}))
+    
+    st.write(f"Dados atualizados em: {df_final['data'].max().strftime('%d/%m/%Y %H:%M')}.")
 
 if __name__ == '__main__':
     main()
