@@ -1,45 +1,6 @@
-import requests
 import sqlite3
-from datetime import datetime
 import pandas as pd
 import streamlit as st
-import pytz
-
-# Função para extrair e salvar o valor da API
-def extrair_e_salvar():
-    url = "https://api.camisa7.botafogo.com.br/public/counter"
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        numero = data.get("res")
-        print(f"Valor extraído: {numero}")
-
-        # Conectar ao banco
-        conn = sqlite3.connect("socios.db")
-        cursor = conn.cursor()
-
-        # Criar tabela se não existir
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS contador (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                data TEXT,
-                socios INTEGER
-            )
-        """)
-
-        # Data/hora no fuso horário de Brasília
-        fuso_brasil = pytz.timezone("America/Sao_Paulo")
-        agora = datetime.now(fuso_brasil).strftime("%Y-%m-%d %H:%M:%S")
-
-        # Inserir registro
-        cursor.execute("INSERT INTO contador (data, socios) VALUES (?, ?)", (agora, numero))
-        conn.commit()
-        conn.close()
-
-        print("Valor salvo com sucesso!")
-    else:
-        print(f"Erro na requisição. Código: {response.status_code}")
 
 # Função para carregar dados do banco SQLite
 def carregar_dados():
@@ -67,7 +28,7 @@ def processar_dados(df):
     # Formatar dia para dd/mm/yyyy
     df_final['dia'] = df_final['dia'].apply(lambda d: d.strftime('%d/%m/%Y'))
     
-    return df_final[['dia', 'hora', 'socios']]
+    return df_final[['data', 'dia', 'hora', 'socios']]
 
 # Interface Streamlit
 def main():
@@ -76,8 +37,6 @@ def main():
         page_icon="⭐",
     )
     st.title("Gráfico de Sócios do Botafogo - Camisa 7")
-
-    # extrair_e_salvar()  # Remova ou comente esta linha
 
     df = carregar_dados()
 
@@ -88,12 +47,12 @@ def main():
     df_final = processar_dados(df)
 
     # Gráfico de sócios
-    st.line_chart(data=df_final.set_index('dia')['socios'])
+    st.line_chart(data=df_final.set_index('data')['socios'])
 
     # Tabela sem índice
     st.write("Dados usados no gráfico:")
     # st.dataframe(df_final.style.hide(axis="index"))
-    df_final = df_final.reset_index(drop=True)
+    df_final = df_final.drop(columns='data').reset_index(drop=True)
     st.dataframe(df_final)
 
 if __name__ == '__main__':
