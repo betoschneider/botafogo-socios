@@ -52,7 +52,7 @@ def main():
     # Tabela sem índice
     st.write("Dados usados no gráfico:")
     # st.dataframe(df_final.style.hide(axis="index"))
-    df_final = df_final.reset_index(drop=True)
+    df_final = df_final.sort_values(by='data', ascending=False).reset_index(drop=True)
     st.dataframe(df_final.drop(columns=['data', 'hora']).rename(columns={'dia': 'Data', 'socios': 'Número de Sócios'}))
     
     st.write(f"Dados atualizados em: {df_final['data'].max().strftime('%d/%m/%Y %H:%M')}.")
