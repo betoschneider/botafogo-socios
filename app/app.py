@@ -68,14 +68,27 @@ def main():
     dias_padrao = 90
     dt_inicio = datetime.combine((dt_fim - pd.Timedelta(days=dias_padrao)).date(), time(0, 0, 0))
     valor_padrao = [dt_inicio, dt_atualizacao]
-    
+
+    st.set_page_config(
+        page_title="Sócios Camisa 7 - Botafogo",
+        page_icon="⭐",
+    )
+    st.title("Número de sócios Camisa 7 Botafogo")
+
+    # Inicializa session_state na primeira execução
+    if "periodo" not in st.session_state:
+        st.session_state["periodo"] = valor_padrao
+
+    # Botão para restaurar valor padrão
+    if st.button("🔄 Restaurar período"):
+        st.session_state["periodo"] = valor_padrao
+
     # componente de seleção de intervalo de datas
     data_selecionada = st.date_input(
         "Selecione o período:",
-        value=valor_padrao,
-        min_value=min(min_data, dt_inicio).date(),
-        # max_value=dt_fim.date(),
-        format="DD/MM/YYYY"
+        # value=st.session_state["periodo"],
+        format="DD/MM/YYYY",
+        key="periodo"
     )
 
     # Garante que sempre seja uma tupla de duas datas
@@ -87,13 +100,7 @@ def main():
 
     df = carregar_dados(datetime.combine(dt_inicio, time(0, 0, 0)), 
                         datetime.combine(dt_fim, time(23, 59, 59))
-                        )
-
-    st.set_page_config(
-        page_title="Sócios Camisa 7 - Botafogo",
-        page_icon="⭐",
     )
-    st.title("Número de sócios Camisa 7 Botafogo")
 
     if df.empty:
         st.write("Nenhum dado encontrado no banco.")
