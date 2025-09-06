@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 import streamlit as st
+import altair as alt
 from datetime import datetime, time
 
 # exemplo de datetime
@@ -109,13 +110,27 @@ def main():
     df_final = processar_dados(df)
 
     # Gráfico de sócios
-    st.line_chart(data=df_final.set_index('data')['socios'])
+    min_socios = df_final['socios'].min()
+    max_socios = df_final['socios'].max()
+    chart = (
+        alt.Chart(df_final[['data', 'socios']])
+        .mark_line(point=True)
+        .encode(
+            x=alt.X("data:T", title="Data"),
+            y=alt.Y("socios:Q", scale=alt.Scale(domain=[min_socios * 0.95, max_socios * 1.05]), title="Socios"),
+        )
+        .properties(
+            width=700,
+            height=400
+        )
+    )
+    st.altair_chart(chart, use_container_width=True)
 
     # Tabela sem índice
     st.write("Dados usados no gráfico:")
     # st.dataframe(df_final.style.hide(axis="index"))
     df_final = df_final.sort_values(by='data', ascending=False).reset_index(drop=True)
-    st.dataframe(df_final.drop(columns=['data', 'hora']).rename(columns={'dia': 'Data', 'socios': 'Número de Sócios'}))
+    st.dataframe(df_final.drop(columns=['data', 'hora']).rename(columns={'dia': 'Data', 'socios': 'Número de Sócios'}), hide_index=True)
     
     st.write(f"Dados atualizados em: {dt_atualizacao.strftime('%d/%m/%Y %H:%M')}.")
     
