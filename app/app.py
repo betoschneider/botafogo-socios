@@ -73,25 +73,32 @@ def main():
     st.set_page_config(
         page_title="Sócios Camisa 7 - Botafogo",
         page_icon="⭐",
+        layout="wide",
     )
     st.title("Número de sócios Camisa 7 Botafogo")
 
-    # Inicializa session_state na primeira execução
-    if "periodo" not in st.session_state:
-        st.session_state["periodo"] = valor_padrao
+    col_esq, col_centro, col_dir = st.columns([1, 2, 4])
+    with col_centro:
+        st.write(" ")
+        st.write(" ")
+        # Inicializa session_state na primeira execução
+        if "periodo" not in st.session_state:
+            st.session_state["periodo"] = valor_padrao
 
-    # Botão para restaurar valor padrão
-    if st.button("🔄 Restaurar período"):
-        st.session_state["periodo"] = valor_padrao
+        # Botão para restaurar valor padrão
+        if st.button(":arrows_counterclockwise:", type="tertiary"):
+            st.session_state["periodo"] = valor_padrao
+    with col_esq:
+        # componente de seleção de intervalo de datas
+        data_selecionada = st.date_input(
+            "Selecione o período:",
+            # value=st.session_state["periodo"],
+            format="DD/MM/YYYY",
+            key="periodo",
+            # label_visibility="hidden",
+        )
 
-    # componente de seleção de intervalo de datas
-    data_selecionada = st.date_input(
-        "Selecione o período:",
-        # value=st.session_state["periodo"],
-        format="DD/MM/YYYY",
-        key="periodo"
-    )
-
+    
     # Garante que sempre seja uma tupla de duas datas
     if isinstance(data_selecionada, (list, tuple)) and len(data_selecionada) == 2:
         dt_inicio, dt_fim = data_selecionada
@@ -127,12 +134,14 @@ def main():
     st.altair_chart(chart, use_container_width=True)
 
     # Tabela sem índice
-    st.write("Dados usados no gráfico:")
-    # st.dataframe(df_final.style.hide(axis="index"))
     df_final = df_final.sort_values(by='data', ascending=False).reset_index(drop=True)
-    st.dataframe(df_final.drop(columns=['data', 'hora']).rename(columns={'dia': 'Data', 'socios': 'Número de Sócios'}), hide_index=True)
     
-    st.write(f"Dados atualizados em: {dt_atualizacao.strftime('%d/%m/%Y %H:%M')}.")
+    # === Conteúdo centralizado abaixo ===
+    col_esq, col_centro, col_dir = st.columns([2, 1, 2])
+    with col_centro:
+        st.subheader("Dados utilizados no gráfico")
+        st.dataframe(df_final.drop(columns=['data', 'hora']).rename(columns={'dia': 'Data', 'socios': 'Número de Sócios'}), hide_index=True)
+        st.write(f"Dados atualizados em: {dt_atualizacao.strftime('%d/%m/%Y %H:%M')}.")
     
 
 if __name__ == '__main__':
