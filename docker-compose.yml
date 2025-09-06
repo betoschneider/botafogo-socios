@@ -16,3 +16,5 @@ services:
     command: python3 worker.py
     volumes:
       - ./app:/app
+    restart: always
+
